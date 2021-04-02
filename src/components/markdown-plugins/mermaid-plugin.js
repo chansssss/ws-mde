@@ -1,7 +1,7 @@
 /* eslint-disable no-debugger */
 import mermaid from 'mermaid'
-function demo_plugin(md) {
-  function myPlugin(state, startLine, endLine, silent) {
+function mermaidPlugin(md) {
+  function mermaidParse(state, startLine, endLine, silent) {
     var marker; var len; var params; var nextLine; var mem; var token; var markup
     var haveEndMarker = false
     var pos = state.bMarks[startLine] + state.tShift[startLine]
@@ -87,7 +87,7 @@ function demo_plugin(md) {
 
     state.line = nextLine + (haveEndMarker ? 1 : 0)
 
-    token = state.push('myplugin', 'mermaid', 0)
+    token = state.push('mermaid', 'mermaid', 0)
     token.info = params
     token.content = state.getLines(startLine + 1, nextLine, len, true)
     token.markup = markup
@@ -96,21 +96,18 @@ function demo_plugin(md) {
     return true
   }
   function render(tokens, idx) {
-    // setTimeout(() => {
-    //     var element = document.querySelector("#graph");
-    //     var insertSvg = function(svgCode){
-    //         console.log(svgCode);
-    //         console.log(element);
-    //         element.innerHTML = svgCode;
-    //     };
-    //     mermaid.mermaidAPI.render('graphDiv', tokens[idx].content , insertSvg);
-    // });
+    console.log(tokens[idx])
     var needsUniqueId = 'render' + +new Date()
+    try {
+      mermaid.mermaidAPI.parse(tokens[idx].content)
+    } catch (error) {
+      return "<div class='error' style='color:red'>mermaid 语法错误，请修正</div>"
+    }
     mermaid.mermaidAPI.render(needsUniqueId, tokens[idx].content, sc => { tokens[idx].content = sc })
     return "<div class='mermaid'>" + tokens[idx].content + '</div>'
   }
-  md.block.ruler.before('table', 'myplugin', myPlugin)
-  md.renderer.rules['myplugin'] = render
+  md.block.ruler.before('table', 'mermaid', mermaidParse)
+  md.renderer.rules['mermaid'] = render
 }
 
-export default demo_plugin
+export default mermaidPlugin

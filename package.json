@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@liradb2000/markdown-it-mermaid": "^0.4.2",
+    "@sixi/markdown-it-mermaid": "^1.0.0",
     "core-js": "^3.6.5",
     "editor.md": "^1.5.0",
     "highlight.js": "^10.7.1",

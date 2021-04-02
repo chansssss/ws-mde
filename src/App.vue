@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <WsMarkdown mode="preview" />
+    <WsMarkdown mode="editor" />
   </div>
 </template>
 

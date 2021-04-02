@@ -130,7 +130,7 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   outline: none;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   color: #34495e;
   background-color: #f1f2f6;

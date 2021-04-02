@@ -4,7 +4,12 @@
 ```
 npm install
 ```
-
+``` mermaid
+     graph LR
+      A --- B
+      B-->C[fa:fa-ban forbidden]
+      B-->D(fa:fa-spinner);
+```
 ### Compiles and hot-reloads for development
 ```
 npm run serve

@@ -2,7 +2,11 @@
   <div class="ws-markdown_container">
     <div class="custom_tool-bar">
       <div class="custom_tool-bar_right">
-        <button class="button button-bar__button" title="Open top tool" @click="exportPdf">
+        <button
+          class="button button-bar__button"
+          title="Open top tool"
+          @click="exportPdf"
+        >
           <svg
             t="1617356612588"
             class="icon"
@@ -28,7 +32,7 @@
     </div>
     <div class="ws-markdown">
       <div
-        v-if="isEditorMode"
+        v-if="isEditorMode && editorVisible"
         class="ws-markdown_editor"
         contenteditable="true"
         @input="changeText"
@@ -80,7 +84,14 @@
           </svg>
         </button>
       </div>
-      <div v-show="previewVisible" id="ws-markdown_preview" class="ws-markdown_preview" v-html="html" />
+      <div
+        v-show="previewVisible"
+        id="ws-markdown_preview"
+        ref="export"
+        class="ws-markdown_preview"
+      >
+        <div id="preview_content" class="preview_content" v-html="html" />
+      </div>
     </div>
   </div>
 </template>
@@ -106,6 +117,7 @@ export default {
       html: '',
       content: '# Hello World',
       previewVisible: true,
+      editorVisible: true,
       syncScroll: true,
       isEditorMode: true
     }
@@ -119,36 +131,103 @@ export default {
   },
   methods: {
     exportPdf() {
-      var target = document.getElementById('ws-markdown_preview')
-      html2canvas(target, {
-        allowTaint: true,
-        scale: 2 // 提升画面质量，但是会增加文件大小
-      }).then(function(canvas) {
-        var contentWidth = canvas.width
-        var contentHeight = canvas.height
-        console.log(contentWidth, contentHeight)
-        var pdfX = ((contentWidth + 10) / 2) * 0.75
-        var pdfY = ((contentHeight + 500) / 2) * 0.75 // 500为底部留白
-        var imgX = pdfX
-        var imgY = (contentHeight / 2) * 0.75 // 内容图片这里不需要留白的距离
-        var url = canvas.toDataURL('image/jpeg', 1.0)
-        var pdf = new JsPDF('', 'pt', [pdfX, pdfY])
-        // 需要dataUrl格式
-        pdf.addImage(
-          url,
-          'JPEG',
-          0,
-          0,
-          imgX,
-          imgY
-        )
+      this.editorVisible = false
+      var target = document.getElementById('preview_content')
+      target.style.width = '900px'
+      target.style.padding = '0 60px'
+      // var cloneDom = target.cloneNode(true)
+      // document.getElementsByTagName('body')[0].appendChild(cloneDom)
+      this.$nextTick(() => {
+        html2canvas(target, {
+          allowTaint: true,
+          scale: 2,
+          scrollX: -window.scrollX,
+          scrollY: -window.scrollY,
+          windowWidth: document.documentElement.offsetWidth,
+          windowHeight: document.documentElement.offsetHeight
+        }).then(function(canvas) {
+          // var contentWidth = canvas.width
+          // var contentHeight = canvas.height
+          // console.log(contentWidth, contentHeight)
+          // var pdfX = ((contentWidth + 10) / 2) * 0.75
+          // var pdfY = ((contentHeight + 500) / 2) * 0.75 // 500为底部留白
+          // var imgX = pdfX
+          // var imgY = (contentHeight / 2) * 0.75 // 内容图片这里不需要留白的距离
+          // var url = canvas.toDataURL('image/jpeg', 1.0)
+          // var pdf = new JsPDF('', 'pt', [pdfX, pdfY])
+          // // 需要dataUrl格式
+          // pdf.addImage(url, 'JPEG', 0, 0, imgX, imgY)
 
-        pdf.save('report.pdf')
+          // pdf.save('report.pdf')
+          document.body.appendChild(canvas)
+          var imgData = canvas.toDataURL('image/jpeg')
+
+          /*
+      Here are the numbers (paper width and height) that I found to work.
+      It still creates a little overlap part between the pages, but good enough for me.
+      if you can find an official number from jsPDF, use them.
+      */
+          var imgWidth = 210
+          var pageHeight = 295
+          var imgHeight = canvas.height * imgWidth / canvas.width
+          var heightLeft = imgHeight
+
+          var doc = new JsPDF('p', 'mm')
+          var position = 0
+
+          doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+          heightLeft -= pageHeight
+
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight
+            doc.addPage()
+            doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+            heightLeft -= pageHeight
+          }
+          doc.save('file.pdf')
+        })
       })
     },
+    exportPdf1() {
+      const scale = 2
+      const clientHeight = this.$refs.export.clientHeight
+      const width = this.$refs.export.clientWidth
+      const cs = document.createElement('canvas')
+      cs.width = width * scale
+      cs.height = clientHeight * scale
+      const content = cs.getContext('2d')
+      content.scale(scale, scale)
+      const rect = this.$refs.export.getBoundingClientRect()
+      content.translate(-rect.left, -rect.top)
+      this.$nextTick(() => {
+        html2canvas(this.$refs.export, {
+          allowTaint: true,
+          taintTest: true,
+          useCORS: true,
+          scale: scale / 2,
+          canvas: cs,
+          width: width,
+          height: clientHeight
+        }).then((canvas) => {
+          var contentWidth = canvas.width
+          var contentHeight = canvas.height
+          console.log(contentWidth, contentHeight)
+          var pdfX = ((contentWidth + 10) / 2) * 0.75
+          var pdfY = ((contentHeight + 500) / 2) * 0.75 // 500为底部留白
+          var imgX = pdfX
+          var imgY = (contentHeight / 2) * 0.75 // 内容图片这里不需要留白的距离
+          var url = canvas.toDataURL('image/jpeg', 1.0)
+          var pdf = new JsPDF('', 'pt', [pdfX, pdfY])
+          // 需要dataUrl格式
+          pdf.addImage(url, 'JPEG', 0, 0, imgX, imgY)
 
+          pdf.save('report.pdf')
+        })
+      })
+    },
     toggleSidePreview() {
-      this.previewVisible = !this.previewVisible
+      // this.previewVisible = !this.previewVisible
+      this.editorVisible = !this.editorVisible
     },
     toggleSyncScroll() {
       this.syncScroll = !this.syncScroll
@@ -175,9 +254,9 @@ export default {
   justify-content: flex-end;
 }
 
-.custom_tool-bar  .icon{
-    fill: #d2dae2;
-  }
+.custom_tool-bar .icon {
+  fill: #d2dae2;
+}
 .ws-markdown {
   height: calc(100% - 40px);
   width: 100%;
@@ -226,6 +305,7 @@ export default {
   height: 26px;
   padding: 2px;
   margin: 3px 0;
+
 }
 
 .ws-markdown .button-bar__button:hover {

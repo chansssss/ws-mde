@@ -32,7 +32,7 @@
     </div>
     <div class="ws-markdown">
       <div
-        v-if="isEditorMode && editorVisible"
+        v-show="isEditorMode && editorVisible"
         class="ws-markdown_editor"
         contenteditable="true"
         @input="changeText"
@@ -54,7 +54,7 @@
         <button
           class="button button-bar__button"
           title="Toggle side preview"
-          :class="previewVisible ? '' : 'button_on'"
+          :class="editorVisible ? 'button_on' : ''"
           @click="toggleSidePreview"
         >
           <svg

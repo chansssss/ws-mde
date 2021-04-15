@@ -2,7 +2,8 @@
 import 'highlight.js/styles/default.css'
 import MarkdownIt from 'markdown-it'
 import mermaid from 'mermaid'
-import mermaidPlugin from '../markdown-plugins/mermaid-plugin'
+import mermaidPlugin from 'markdwon-it_mermaid'
+import webviewPlugin from 'markdwon-it_webview'
 export default {
   data() {
     return {
@@ -30,6 +31,7 @@ export default {
       })
 
       this.md.use(mermaidPlugin)
+      this.md.use(webviewPlugin)
     }
   },
   created() {

@@ -5,7 +5,7 @@
         <button
           class="button button-bar__button"
           title="Open top tool"
-          @click="exportPdf"
+          @click="exportMd"
         >
           <svg
             t="1617356612588"
@@ -130,6 +130,14 @@ export default {
     this.html = this.md.render(this.content)
   },
   methods: {
+    exportMd() {
+      const mdContent = document.getElementsByClassName('ws-markdown_editor')[0].target.innerText
+      var FileSaver = require('file-saver')
+      var blob = new Blob([mdContent], {
+        type: 'text/plain;charset=utf-8'
+      })
+      FileSaver.saveAs(blob, 'file.md')
+    },
     exportPdf() {
       this.editorVisible = false
       var target = document.getElementById('preview_content')
@@ -145,7 +153,7 @@ export default {
           scrollY: -window.scrollY,
           windowWidth: document.documentElement.offsetWidth,
           windowHeight: document.documentElement.offsetHeight
-        }).then(function(canvas) {
+        }).then(canvas => {
           // var contentWidth = canvas.width
           // var contentHeight = canvas.height
           // console.log(contentWidth, contentHeight)
@@ -169,7 +177,7 @@ export default {
       */
           var imgWidth = 210
           var pageHeight = 295
-          var imgHeight = canvas.height * imgWidth / canvas.width
+          var imgHeight = (canvas.height * imgWidth) / canvas.width
           var heightLeft = imgHeight
 
           var doc = new JsPDF('p', 'mm')
@@ -213,9 +221,9 @@ export default {
           var contentHeight = canvas.height
           console.log(contentWidth, contentHeight)
           var pdfX = ((contentWidth + 10) / 2) * 0.75
-          var pdfY = ((contentHeight + 500) / 2) * 0.75 // 500为底部留白
+          var pdfY = ((contentHeight + 500) / 2) * 0.75// 500为底部留白
           var imgX = pdfX
-          var imgY = (contentHeight / 2) * 0.75 // 内容图片这里不需要留白的距离
+          var imgY = (contentHeight / 2) * 0.75// 内容图片这里不需要留白的距离
           var url = canvas.toDataURL('image/jpeg', 1.0)
           var pdf = new JsPDF('', 'pt', [pdfX, pdfY])
           // 需要dataUrl格式
@@ -239,7 +247,8 @@ export default {
   }
 }
 </script>
-
+<style>
+</style>
 <style scoped>
 .ws-markdown_container {
   height: 100%;
@@ -305,7 +314,6 @@ export default {
   height: 26px;
   padding: 2px;
   margin: 3px 0;
-
 }
 
 .ws-markdown .button-bar__button:hover {
@@ -332,3 +340,4 @@ export default {
   display: block;
 }
 </style>
+

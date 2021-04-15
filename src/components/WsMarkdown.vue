@@ -4,7 +4,7 @@
       <div class="custom_tool-bar_right">
         <button
           class="button button-bar__button"
-          title="Open top tool"
+          title="Save as Markdown"
           @click="exportMd"
         >
           <svg
@@ -39,7 +39,7 @@
         v-html="content"
       />
       <div v-if="isEditorMode" class="ws-markdown_tool-bar">
-        <button class="button button-bar__button" title="Open top tool">
+        <!-- <button class="button button-bar__button" title="Open top tool">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -50,7 +50,7 @@
             />
             <rect x="3" y="3.023" width="18" height="2" />
           </svg>
-        </button>
+        </button> -->
         <button
           class="button button-bar__button"
           title="Toggle side preview"
@@ -71,6 +71,7 @@
         <button
           class="button button-bar__button"
           :class="syncScroll ? 'button_on' : ''"
+          title="Sync Scroll"
           @click="toggleSyncScroll"
         >
           <svg
@@ -131,7 +132,7 @@ export default {
   },
   methods: {
     exportMd() {
-      const mdContent = document.getElementsByClassName('ws-markdown_editor')[0].target.innerText
+      const mdContent = document.getElementsByClassName('ws-markdown_editor')[0].innerText
       var FileSaver = require('file-saver')
       var blob = new Blob([mdContent], {
         type: 'text/plain;charset=utf-8'

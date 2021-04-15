@@ -2,8 +2,6 @@
 import 'highlight.js/styles/default.css'
 import MarkdownIt from 'markdown-it'
 import mermaid from 'mermaid'
-import mermaidPlugin from 'markdwon-it_mermaid'
-import webviewPlugin from 'markdwon-it_webview'
 export default {
   data() {
     return {
@@ -29,9 +27,9 @@ export default {
           return '<pre class="hljs"><code>' + MarkdownIt().utils.escapeHtml(str) + '</code></pre>'
         }
       })
-
-      this.md.use(mermaidPlugin)
-      this.md.use(webviewPlugin)
+      // console.log(require('@wesi/markdown-it_mermaid'))
+      // this.md.use(require('@wesi/markdown-it_mermaid'))
+      this.md.use(require('markdown-it_webview'))
     }
   },
   created() {

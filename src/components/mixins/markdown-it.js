@@ -27,9 +27,8 @@ export default {
           return '<pre class="hljs"><code>' + MarkdownIt().utils.escapeHtml(str) + '</code></pre>'
         }
       })
-      // console.log(require('@wesi/markdown-it_mermaid'))
-      // this.md.use(require('@wesi/markdown-it_mermaid'))
-      this.md.use(require('markdown-it_webview'))
+      this.md.use(require('@wesi/markdown-it-webview'))
+      this.md.use(require('@wesi/markdown-it-mermaid'))
     }
   },
   created() {

@@ -1,6 +1,9 @@
 <template>
   <div class="ws-markdown_container">
     <div class="custom_tool-bar">
+      <div class="custom_tool-bar_left" contenteditable="true">
+        undefined
+      </div>
       <div class="custom_tool-bar_right">
         <button
           class="button button-bar__button"
@@ -115,6 +118,7 @@ export default {
   },
   data() {
     return {
+      title: 'undefined',
       html: '',
       content: '# Hello World',
       previewVisible: true,
@@ -137,7 +141,9 @@ export default {
       var blob = new Blob([mdContent], {
         type: 'text/plain;charset=utf-8'
       })
-      FileSaver.saveAs(blob, 'file.md')
+      const title = document.getElementsByClassName('custom_tool-bar_left')[0].innerText
+      this.title = title || 'undefined'
+      FileSaver.saveAs(blob, `${this.title}.md`)
     },
     exportPdf() {
       this.editorVisible = false
@@ -261,7 +267,17 @@ export default {
   height: 40px;
   background-color: #2c3a47;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.custom_tool-bar_left{
+  color: white;
+  text-align: left;
+  height: 100%;
+  min-width: 60px;
+  line-height: 40px;
+  outline: none;
+  border-bottom: 1px solid #e1e4e8;
 }
 
 .custom_tool-bar .icon {
